@@ -164,9 +164,7 @@ class ResidualBlock(nn.Module):
         return x + self.block(x)
 
 
-# For further info on how the non-linear transform is implemented in Pennylane
-# https://discuss.pennylane.ai/t/ancillary-subsystem-measurement-then-trace-out/1532
-def partial_measure(noise, weights):
+
     # Non-linear Transform
     probs = quantum_circuit(noise, weights)
     probsgiven0 = probs[: (2 ** (n_qubits - n_a_qubits))]
