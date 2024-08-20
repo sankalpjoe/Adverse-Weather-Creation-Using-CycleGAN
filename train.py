@@ -21,7 +21,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 def train_fn(
-    disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler
+    disc_N, disc_D, gen_D, gen_N, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler
 ):
     H_reals = 0
     H_fakes = 0
@@ -39,56 +39,55 @@ def train_fn(
             opt_gen.step()
             opt_gen.zero_grad()
 
-        # Train Discriminators H and Z
+    
         with torch.cuda.amp.autocast():
-            fake_day = gen_H(night)
-            D_H_real = disc_H(day)
-            D_H_fake = disc_H(fake_day.detach())
-            H_reals += D_H_real.mean().item()
-            H_fakes += D_H_fake.mean().item()
-            D_H_real_loss = mse(D_H_real, torch.ones_like(D_H_real))
-            D_H_fake_loss = mse(D_H_fake, torch.zeros_like(D_H_fake))
-            D_H_loss = D_H_real_loss + D_H_fake_loss
+            fake_day = gen_N(night)
+            D_N_real = disc_N(day)
+            D_N_fake = disc_N(fake_day.detach())
+            N_reals += D_N_real.mean().item()
+            N_fakes += D_N_fake.mean().item()
+            D_N_real_loss = mse(D_N_real, torch.ones_like(D_N_real))
+            D_N_fake_loss = mse(D_N_fake, torch.zeros_like(D_N_fake))
+            D_N_loss = D_N_real_loss + D_N_fake_loss
 
-            fake_night = gen_Z(day)
-            D_Z_real = disc_Z(night)
-            D_Z_fake = disc_Z(fake_night.detach())
-            D_Z_real_loss = mse(D_Z_real, torch.ones_like(D_Z_real))
-            D_Z_fake_loss = mse(D_Z_fake, torch.zeros_like(D_Z_fake))
-            D_Z_loss = D_Z_real_loss + D_Z_fake_loss
+            fake_night = gen_D(day)
+            D_D_real = disc_D(night)
+            D_D_fake = disc_Z(fake_night.detach())
+            D_D_real_loss = mse(D_D_real, torch.ones_like(D_D_real))
+            D_D_fake_loss = mse(D_D_fake, torch.zeros_like(D_D_fake))
+            D_D_loss = D_D_real_loss + D_D_fake_loss
 
-            # put it togethor
-            D_loss = (D_H_loss + D_Z_loss) / 2
+           
+            D_loss = (D_N_loss + D_D_loss) / 2
 
         opt_disc.zero_grad()
         d_scaler.scale(D_loss).backward()
         d_scaler.step(opt_disc)
         d_scaler.update()
 
-        # Train Generators H and Z
         with torch.cuda.amp.autocast():
             # adversarial loss for both generators
-            D_H_fake = disc_H(fake_day)
-            D_Z_fake = disc_Z(fake_night)
-            loss_G_H = mse(D_H_fake, torch.ones_like(D_H_fake))
-            loss_G_Z = mse(D_Z_fake, torch.ones_like(D_Z_fake))
+            D_N_fake = disc_N(fake_day)
+            D_D_fake = disc_D(fake_night)
+            loss_G_N = mse(D_N_fake, torch.ones_like(D_N_fake))
+            loss_G_D = mse(D_D_fake, torch.ones_like(D_D_fake))
 
             # cycle loss
-            cycle_night = gen_Z(fake_day)
-            cycle_day = gen_H(fake_night)
+            cycle_night = gen_D(fake_day)
+            cycle_day = gen_N(fake_night)
             cycle_night_loss = l1(night, cycle_night)
             cycle_day_loss = l1(day, cycle_day)
 
-            # identity loss (remove these for efficiency if you set lambda_identity=0)
-            #identity_night = gen_Z(night)
-            #identity_day = gen_H(day)
-            #identity_night_loss = l1(night, identity_night)
-            #identity_day_loss = l1(day, identity_day)
+         
+            identity_night = gen_D(night)
+            identity_day = gen_N(day)
+            identity_night_loss = l1(night, identity_night)
+            identity_day_loss = l1(day, identity_day)
 
             # add all togethor
             G_loss = (
-                loss_G_Z
-                + loss_G_H
+                loss_G_D
+                + loss_G_N
                 + cycle_night_loss * config.LAMBDA_CYCLE
                 + cycle_day_loss * config.LAMBDA_CYCLE
               #  + identity_day_loss * config.LAMBDA_IDENTITY
@@ -108,18 +107,18 @@ def train_fn(
         torch.cuda.empty_cache()
 
 def main():
-    disc_H = Discriminator(in_channels=3).to(config.DEVICE)
-    disc_Z = Discriminator(in_channels=3).to(config.DEVICE)
-    gen_Z = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
-    gen_H = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
+    disc_N = Discriminator(in_channels=3).to(config.DEVICE)
+    disc_D = Discriminator(in_channels=3).to(config.DEVICE)
+    gen_D = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
+    gen_N = Generator(img_channels=3, num_residuals=9).to(config.DEVICE)
     opt_disc = optim.Adam(
-        list(disc_H.parameters()) + list(disc_Z.parameters()),
+        list(disc_N.parameters()) + list(disc_D.parameters()),
         lr=config.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
 
     opt_gen = optim.Adam(
-        list(gen_Z.parameters()) + list(gen_H.parameters()),
+        list(gen_D.parameters()) + list(gen_N.parameters()),
         lr=config.LEARNING_RATE,
         betas=(0.5, 0.999),
     )
@@ -129,26 +128,26 @@ def main():
 
     if config.LOAD_MODEL:
         load_checkpoint(
-            config.CHECKPOINT_GEN_H,
-            gen_H,
+            config.CHECKPOINT_GEN_N,
+            gen_N,
             opt_gen,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_GEN_Z,
-            gen_Z,
+            config.CHECKPOINT_GEN_D,
+            gen_D,
             opt_gen,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_H,
-            disc_H,
+            config.CHECKPOINT_CRITIC_N,
+            disc_N,
             opt_disc,
             config.LEARNING_RATE,
         )
         load_checkpoint(
-            config.CHECKPOINT_CRITIC_Z,
-            disc_Z,
+            config.CHECKPOINT_CRITIC_D,
+            disc_D,
             opt_disc,
             config.LEARNING_RATE,
         )
@@ -181,10 +180,10 @@ def main():
 
     for epoch in range(config.NUM_EPOCHS):
         train_fn(
-            disc_H,
-            disc_Z,
-            gen_Z,
-            gen_H,
+            disc_N,
+            disc_D,
+            gen_D,
+            gen_N,
             loader,
             opt_disc,
             opt_gen,
@@ -195,10 +194,10 @@ def main():
         )
 
         if config.SAVE_MODEL:
-            save_checkpoint(gen_H, opt_gen, filename=config.CHECKPOINT_GEN_H)
-            save_checkpoint(gen_Z, opt_gen, filename=config.CHECKPOINT_GEN_Z)
-            save_checkpoint(disc_H, opt_disc, filename=config.CHECKPOINT_CRITIC_H)
-            save_checkpoint(disc_Z, opt_disc, filename=config.CHECKPOINT_CRITIC_Z)
+            save_checkpoint(gen_H, opt_gen, filename=config.CHECKPOINT_GEN_N)
+            save_checkpoint(gen_Z, opt_gen, filename=config.CHECKPOINT_GEN_D)
+            save_checkpoint(disc_H, opt_disc, filename=config.CHECKPOINT_CRITIC_N)
+            save_checkpoint(disc_Z, opt_disc, filename=config.CHECKPOINT_CRITIC_D)
 
 
 if __name__ == "__main__":
