@@ -218,4 +218,5 @@ This implementation is based on the following research:
 - [Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks](https://arxiv.org/abs/1703.10593) by Jun-Yan Zhu, Taesung Park, Phillip Isola, and Alexei A. Efros
 - SPA-GAN: Spatial Attention GAN for Image-to-Image Translation (Emami et al., 2021)
 - SuperstarGAN: Generative adversarial networks for image-to-image translation in large-scale domains (Ko et al., 2023)
+- https://github.com/junyanz/CycleGAN
 
