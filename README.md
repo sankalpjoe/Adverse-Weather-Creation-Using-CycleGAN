@@ -181,7 +181,7 @@ This implementation includes several optimizations for managing GPU memory:
 You may need to adjust these settings based on your hardware capabilities.
 
 ## Results
-![image](https://github.com/user-attachments/assets/bd6f56f1-11d4-4e14-a9bc-d22d094749f0)
+![image](https://github.com/user-attachments/assets/bd6f56f1-11d4-4e14-a9bc-d22d094749f0 =500x)
 
 After training on the Berkeley DeepDrive dataset with 506 images for 35 epochs, the model demonstrated success in mapping images between clear and adverse conditions. The results showed promising transformations of:
 - Daytime scenes to nighttime
