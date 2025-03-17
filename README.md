@@ -183,6 +183,8 @@ You may need to adjust these settings based on your hardware capabilities.
 ## Results
 ![image](https://github.com/user-attachments/assets/bd6f56f1-11d4-4e14-a9bc-d22d094749f0)
 
+<img src="https://github.com/user-attachments/assets/bd6f56f1-11d4-4e14-a9bc-d22d094749f0" width="500" alt="image">
+
 After training on the Berkeley DeepDrive dataset with 506 images for 35 epochs, the model demonstrated success in mapping images between clear and adverse conditions. The results showed promising transformations of:
 - Daytime scenes to nighttime
 - Clear driving conditions to rainy weather
