@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Day and night image translation</title>
+  <desc id="desc">A city road shifts from warm daylight on the left to a cool starry night on the right.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#f8c974"/>
+      <stop offset="0.42" stop-color="#f2a987"/>
+      <stop offset="0.57" stop-color="#435685"/>
+      <stop offset="1" stop-color="#121c38"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#566579"/>
+      <stop offset="1" stop-color="#1c2943"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+  <rect width="1200" height="360" rx="20" fill="url(#sky)"/>
+  <circle cx="205" cy="92" r="42" fill="#fff2be" opacity="0.42" filter="url(#glow)"/>
+  <circle cx="205" cy="92" r="31" fill="#fff4ca"/>
+  <circle cx="982" cy="85" r="33" fill="#e3eeff" opacity="0.32" filter="url(#glow)"/>
+  <circle cx="982" cy="85" r="25" fill="#e8f1ff"/>
+  <circle cx="994" cy="76" r="24" fill="#182644"/>
+  <g fill="#e6efff" opacity="0.84">
+    <circle cx="729" cy="57" r="2"/><circle cx="809" cy="100" r="1.7"/>
+    <circle cx="877" cy="42" r="1.5"/><circle cx="1067" cy="49" r="2"/>
+    <circle cx="1120" cy="106" r="1.4"/><circle cx="749" cy="131" r="1.3"/>
+  </g>
+  <path d="M0 237 L0 169 70 169 70 205 112 205 112 146 168 146 168 191 208 191 208 163 262 163 262 215 329 215 329 174 384 174 384 228 447 228 447 181 518 181 518 223 579 223 579 157 643 157 643 220 701 220 701 186 758 186 758 226 813 226 813 144 874 144 874 211 926 211 926 169 981 169 981 230 1044 230 1044 151 1111 151 1111 204 1164 204 1164 178 1200 178 1200 253 Z" fill="#23334f" opacity="0.49"/>
+  <path d="M0 260 L0 214 62 214 62 182 137 182 137 244 201 244 201 195 261 195 261 254 315 254 315 217 385 217 385 253 451 253 451 208 527 208 527 253 591 253 591 187 654 187 654 253 711 253 711 209 782 209 782 251 846 251 846 178 912 178 912 245 972 245 972 207 1036 207 1036 251 1096 251 1096 187 1165 187 1165 234 1200 234 1200 270 Z" fill="#263754"/>
+  <g fill="#fce5a5" opacity="0.72">
+    <rect x="614" y="202" width="8" height="10"/><rect x="632" y="202" width="8" height="10"/>
+    <rect x="862" y="193" width="8" height="10"/><rect x="881" y="193" width="8" height="10"/>
+    <rect x="986" y="219" width="8" height="10"/><rect x="1006" y="219" width="8" height="10"/>
+    <rect x="1112" y="200" width="8" height="10"/><rect x="1131" y="200" width="8" height="10"/>
+  </g>
+  <path d="M0 272 Q600 231 1200 272 L1200 360 0 360 Z" fill="url(#road)"/>
+  <path d="M572 275 L628 275 772 360 430 360 Z" fill="#d3dbe3" opacity="0.09"/>
+  <path d="M597 291 L603 291 610 315 590 315 Z M588 333 L612 333 625 360 575 360 Z" fill="#f6e9c4" opacity="0.68"/>
+  <path d="M594 130 C565 144 565 174 594 187 M606 130 C635 144 635 174 606 187" fill="none" stroke="#fff" stroke-width="3" opacity="0.72"/>
+  <path d="M588 161 L612 161 M600 149 L612 161 600 173" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  <rect x="458" width="284" height="360" fill="url(#fade)"/>
+  <text x="57" y="57" fill="#243147" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="3">DAY</text>
+  <text x="1080" y="57" fill="#e9f1ff" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="3">NIGHT</text>
+  <text x="600" y="83" fill="#fff" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="1">Day ↔ Night</text>
+  <text x="600" y="113" fill="#fff" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" letter-spacing="2">UNPAIRED IMAGE TRANSLATION WITH CYCLEGAN</text>
+</svg>
